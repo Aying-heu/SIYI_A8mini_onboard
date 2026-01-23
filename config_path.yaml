@@ -1,0 +1,19 @@
+# config_path.yaml
+root_path: "/home/robot/A_vision_relate/"
+
+models:
+  board:
+    path: "onnx_model/board.onnx"
+    classes: ["board"]
+  mark:
+    path: "onnx_model/mark.onnx"
+    classes: ["mark_1","mark_A","mark_B","mark_C","mark_H","mark_X","mark_N","mark_O","mark_W"]
+
+data:
+  index_file: "image_index.csv"
+  uav_state_file: "uav_states.csv"
+  gimbal_state_file: "gimbal_states.csv"
+  cam_param_file: "yaml/camera_K.yaml"
+  zoom_file: "zoom_correspond.csv"
+  # images 会在程序运行时动态生成，这里可以留空或写个前缀
+  image_dir_prefix: "datasets/data_"

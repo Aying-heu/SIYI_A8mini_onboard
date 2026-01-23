@@ -1,0 +1,238 @@
+%YAML:1.0
+# 相机PNP定位 - 世界坐标配置文件
+# 坐标系说明：世界坐标系，单位：米，右手系（X东/Y北/Z上）
+# 定位块字段说明：
+# - id: 唯一标识（用于程序中区分定位块）
+# - function: 功能描述（如“着陆点”“障碍物标记”“导航参考点”）
+# - type: 坐标类型（corner: 四角点，center: 中心点）
+# - coordinates: 坐标数据（corner为4个点的(x,y,z)列表，center为单个(x,y,z)）
+# 单位为米
+---
+board:
+  length: 0.7
+  width: 0.51
+  reference_center_point: [0,0]
+  code_margin: 2  # 码边距
+  number_of_pixels: 21  # 每边像素数 不包括码边距
+
+special_mark:
+  - id: mark_A
+    side_length: 0.14
+    QR_top_left_reference_point: [0.365,0.555]
+    Aruco_top_left_reference_point: [0.005,0.555]
+  - id: mark_B
+    side_length: 0.1
+    QR_top_left_reference_point: [0.39,0.31]
+    Aruco_top_left_reference_point: [0.02,0.31]
+  - id: mark_C
+    side_length: 0.06
+    QR_top_left_reference_point: [0.43,0.42]
+    Aruco_top_left_reference_point: [0.02,0.42]
+  - id: mark_H
+    side_length: 0.04
+    QR_top_left_reference_point: [0.44,0.495]
+    Aruco_top_left_reference_point: [0.03,0.495]
+  - id: mark_1
+    side_length: 0.04
+    QR_top_left_reference_point: [0.38,0.43]
+    Aruco_top_left_reference_point: [0.09,0.43]
+  - id: mark_X
+    side_length: 0.03
+    QR_top_left_reference_point: [0.405,0.4825]
+    Aruco_top_left_reference_point: [0.075,0.4825]
+  - id: mark_N
+    side_length: 0.03
+    QR_top_left_reference_point: [0.402,0.515]
+    Aruco_top_left_reference_point: [0.078,0.515]
+  - id: mark_W
+    side_length: 0.03
+    QR_top_left_reference_point: [0.368,0.485]
+    Aruco_top_left_reference_point: [0.112,0.485]
+  - id: mark_O
+    side_length: 0.03
+    QR_top_left_reference_point: [0.367,-0.52]
+    Aruco_top_left_reference_point: [0.113,-0.52]
+
+
+QR_code:
+  - id: No.1
+    actual_appearance: 右上角最大方块
+    top_left_reference_point: [0.23,0.03]
+    side_length: 0.25
+  - id: No.2
+    actual_appearance: 左上角第二大
+    top_left_reference_point: [0.03,0.03]
+    side_length: 0.18
+  - id: No.3
+    actual_appearance: 左侧中间第三大
+    top_left_reference_point: [0.03,0.22]
+    side_length: 0.12
+  - id: No.4
+    actual_appearance: 抓取框上左
+    top_left_reference_point: [0.16,0.29]
+    side_length: 0.08
+  - id: No.5
+    actual_appearance: 抓取框上右
+    top_left_reference_point: [0.305,0.31]
+    side_length: 0.06
+  - id: No.6
+    actual_appearance: 抓取框上中间
+    top_left_reference_point: [0.255,0.31]
+    side_length: 0.04
+  - id: No.15
+    actual_appearance: 抓取框上中左
+    top_left_reference_point: [0.245,0.36]
+    side_length: 0.02
+  - id: No.16
+    actual_appearance: 抓取框上中右
+    top_left_reference_point: [0.275,0.36]
+    side_length: 0.02
+  - id: No.7
+    actual_appearance: 左下角
+    top_left_reference_point: [0.045,0.57]
+    side_length: 0.1
+  - id: No.10
+    actual_appearance: 底部第二个
+    top_left_reference_point: [0.16,0.61]
+    side_length: 0.06
+  - id: No.11
+    actual_appearance: 底部第四个
+    top_left_reference_point: [0.3,0.61]
+    side_length: 0.06
+  - id: No.12
+    actual_appearance: 底部第三个
+    top_left_reference_point: [0.24,0.61]
+    side_length: 0.04
+  - id: No.17
+    actual_appearance: 左侧集中左1
+    top_left_reference_point: [0.012,0.375]
+    side_length: 0.04
+  - id: No.18
+    actual_appearance: 左侧集中左2
+    top_left_reference_point: [0.012,0.435]
+    side_length: 0.04
+  - id: No.19
+    actual_appearance: 左侧集中左3
+    top_left_reference_point: [0.012,0.495]
+    side_length: 0.04
+  - id: No.20
+    actual_appearance: 左侧集中中1
+    top_left_reference_point: [0.06,0.355]
+    side_length: 0.03
+  - id: No.21
+    actual_appearance: 左侧集中中2
+    top_left_reference_point: [0.06,0.41]
+    side_length: 0.03
+  - id: No.24
+    actual_appearance: 左侧集中右1
+    top_left_reference_point: [0.105,0.39]
+    side_length: 0.04
+  - id: No.25
+    actual_appearance: 左侧集中右2
+    top_left_reference_point: [0.105,0.45]
+    side_length: 0.04
+
+  - id: No.22
+    actual_appearance: 右侧集中中3-QR
+    top_left_reference_point: [0.42,0.465]
+    side_length: 0.03
+  - id: No.23
+    actual_appearance: 右侧集中中4-QR
+    top_left_reference_point: [0.42,0.52]
+    side_length: 0.03
+  - id: No.26
+    actual_appearance: 右侧集中左3-QR
+    top_left_reference_point: [0.365,0.51]
+    side_length: 0.04
+
+
+Aruco:
+  - id: 1
+    actual_appearance: 左上角最大方块
+    top_left_reference_point: [0.03,0.03]
+    side_length: 0.25
+  - id: 2
+    actual_appearance: 右上角第二大
+    top_left_reference_point: [0.3,0.03]
+    side_length: 0.18
+  - id: 3
+    actual_appearance: 右侧中间第三大
+    top_left_reference_point: [0.36,0.22]
+    side_length: 0.12
+  - id: 4
+    actual_appearance: 抓取框上右
+    top_left_reference_point: [0.27,0.29]
+    side_length: 0.08
+  - id: 5
+    actual_appearance: 抓取框上左 
+    top_left_reference_point: [0.145,0.31]
+    side_length: 0.06
+  - id: 6
+    actual_appearance: 抓取框上中间
+    top_left_reference_point: [0.215,0.31]
+    side_length: 0.04
+  - id: 15
+    actual_appearance: 抓取框上中右
+    top_left_reference_point: [0.245,0.36]
+    side_length: 0.02
+  - id: 16
+    actual_appearance: 抓取框上中左
+    top_left_reference_point: [0.215,0.36]
+    side_length: 0.02
+  - id: 7
+    actual_appearance: 右下角
+    top_left_reference_point: [0.365,0.57]
+    side_length: 0.1
+  - id: 10
+    actual_appearance: 底部第三个
+    top_left_reference_point: [0.29,0.61]
+    side_length: 0.06
+  - id: 11
+    actual_appearance: 底部第一个
+    top_left_reference_point: [0.15,0.61]
+    side_length: 0.06
+  - id: 12
+    actual_appearance: 底部第二个
+    top_left_reference_point: [0.23,0.61]
+    side_length: 0.04
+  - id: 17
+    actual_appearance: 右侧集中右1
+    top_left_reference_point: [0.458,0.375]
+    side_length: 0.04
+  - id: 18
+    actual_appearance: 右侧集中右2
+    top_left_reference_point: [0.458,0.435]
+    side_length: 0.04
+  - id: 19
+    actual_appearance: 右侧集中右3
+    top_left_reference_point: [0.458,0.495]
+    side_length: 0.04
+  - id: 20
+    actual_appearance: 右侧集中中1
+    top_left_reference_point: [0.42,0.355]
+    side_length: 0.03
+  - id: 21
+    actual_appearance: 右侧集中中2
+    top_left_reference_point: [0.42,0.41]
+    side_length: 0.03
+  - id: 24
+    actual_appearance: 右侧集中左1
+    top_left_reference_point: [0.365,0.39]
+    side_length: 0.04
+  - id: 25
+    actual_appearance: 右侧集中左2
+    top_left_reference_point: [0.365,0.45]
+    side_length: 0.04
+
+  - id: 22
+    actual_appearance: 左侧集中中3-ARUCO
+    top_left_reference_point: [0.06,0.465]
+    side_length: 0.03
+  - id: 23
+    actual_appearance: 左侧集中中4-ARUCO
+    top_left_reference_point: [0.06,0.52]
+    side_length: 0.03
+  - id: 26
+    actual_appearance: 左侧集中右3-ARUCO
+    top_left_reference_point: [0.105,0.51]
+    side_length: 0.04
