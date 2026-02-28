@@ -14,68 +14,62 @@
 ## 🔄 系统架构与数据流向 (System Architecture & Data Flow)
 系统采用高度解耦的多线程架构，所有模块通过中心化的 DataManager 进行数据交互，保证了各模块的非阻塞运行。
 ```mermaid
-graph TD
-    subgraph Hardware [硬件与外部接口层]
-        Cam[📷 云台相机视频流]
-        Gimbal[🎯 SIYI A8 云台]
-        FC[🚁 PX4飞控 / MAVROS]
-    end
+flowchart TD
+    %% 定义全局颜色与样式（保持不变）
+    classDef hw fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b,rx:5px
+    classDef thread fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c,rx:5px
+    classDef core fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100,rx:10px
+    classDef algo fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20,rx:5px
+    classDef out fill:#fce4ec,stroke:#d81b60,stroke-width:2px,color:#880e4f,rx:5px
 
-    subgraph Input_Threads [输入处理线程组]
-        CamMod(Camera Module<br/>GStreamer 硬件解码)
-        GimbalMod(Gimbal Module<br/>UDP 状态轮询)
-        UAVMod(UAV Module<br/>ROS 2 状态订阅)
-    end
+    %% ================= 1. 硬件层 =================
+    Gimbal[🎯 SIYI 云台]:::hw
+    Cam[📷 相机视频流]:::hw
+    FC[🚁 PX4 飞控]:::hw
 
-    subgraph Core [核心数据交换中心]
-        DM{Data Manager<br/>多传感器时间对齐缓冲池}
-        ESKF((ESKF 状态滤波))
-    end
+    %% 去掉 Gimbal~~~Cam~~~FC，它们自然水平排列
 
-    subgraph Compute_Threads[核心算法与后处理线程组]
-        VisMod(Vision Module<br/>YOLO + ArUco + PnP)
-        PredMod(Predictor Module<br/>ONNX 时序轨迹预测)
-        LogMod(Logger Module<br/>Zero-Copy 异步落盘)
-    end
+    %% ================= 2. 采集线程 =================
+    GimbalMod[Gimbal Module<br/>UDP 状态轮询]:::thread
+    CamMod[Camera Module<br/>GStreamer 硬件解码]:::thread
+    UAVMod[UAV Module<br/>ROS2 状态订阅]:::thread
 
-    subgraph Outputs [系统输出层]
-        TargetMsg[ROS 2 Topic<br/>TargetArray 预测轨迹发布]
-        Storage[(SSD 固态硬盘<br/>历史 CSV 与 图像日志)]
-        GimbalCmd[UDP 报文<br/>云台闭环跟踪指令]
-    end
+    Gimbal -->|UDP 20Hz| GimbalMod
+    Cam -->|V4L2 MJPEG| CamMod
+    FC -->|/prometheus/state| UAVMod
 
-    %% 数据流向
-    Cam -- V4L2 MJPEG --> CamMod
-    Gimbal -- UDP 20Hz --> GimbalMod
-    FC -- /prometheus/state --> UAVMod
+    %% ================= 3. 核心枢纽 =================
+    DM[(Data Manager 核心缓冲池<br/>+<br/>ESKF 状态滤波)]:::core
 
-    CamMod -- 压入图像 + TS --> DM
-    GimbalMod -- 压入云台姿态 + TS --> DM
-    UAVMod -- 压入机体姿态 + TS --> DM
+    GimbalMod -->|压入云台姿态+TS| DM
+    CamMod -->|压入图像+TS| DM
+    UAVMod -->|压入机体姿态+TS| DM
 
-    DM -- "1.唤醒并弹出图像<br/>2.根据TS查找位姿" --> VisMod
-    VisMod -- "观测位姿 (Z-Y-X 欧拉角/四元数)" --> ESKF
-    ESKF -- 滤波/平滑后的目标状态 --> DM
+    %% ================= 4. 算法与后处理层 =================
+    VisMod[Vision Module<br/>YOLO + ArUco + PnP]:::algo
+    PredMod[Predictor Module<br/>ONNX 时序轨迹预测]:::algo
+    LogMod[Logger Module<br/>异步落盘记录]:::algo
 
-    DM -- 提取 15Hz 历史序列 --> PredMod
-    PredMod -- 预测未来 N 帧轨迹 --> TargetMsg
-    
-    DM -. 获取目标当前相对坐标 .-> GimbalMod
-    GimbalMod -. 下发 Pitch/Yaw 增量 .-> GimbalCmd
+    DM ==>|1.唤醒并提取对齐位姿| VisMod
+    VisMod -.->|2.回写观测进行滤波| DM
 
-    DM == "std::vector::swap<br/>(极速提取已用数据)" ==> LogMod
-    LogMod -- 无锁 IO 写入 --> Storage
+    DM -->|提取 15Hz 平滑历史| PredMod
+    DM ==>|Swap 极速提取历史| LogMod
 
-    %% 样式美化
-    classDef hardware fill:#e1f5fe,stroke:#3b82f6,stroke-width:2px;
-    classDef thread fill:#f3e5f5,stroke:#0288d1,stroke-width:1px;
-    classDef core fill:#fff3e0,stroke:#fbc02d,stroke-width:2px;
-    classDef output fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    
-    class Cam,Gimbal,FC hardware;
-    class CamMod,GimbalMod,UAVMod,VisMod,PredMod,LogMod thread;
-    class DM,ESKF core;
-    class TargetMsg,Storage,GimbalCmd output;
+    DM -.->|获取目标相对坐标| GimbalMod
+
+    %% ================= 5. 系统输出层 =================
+    GimbalCmd[UDP 报文<br/>云台闭环跟踪]:::out
+    TargetMsg1[ROS2 Topic<br/>Target 实时观测]:::out
+    TargetMsg2[ROS2 Topic<br/>TargetArray 预测轨迹]:::out
+    Storage[(SSD 固态硬盘<br/>CSV 与 图像日志)]:::out
+
+    %% 去掉 GimbalCmd ~~~ TargetMsg1 ~~~ TargetMsg2 ~~~ Storage，它们自然水平排列
+
+    GimbalMod -.->|下发 Pitch/Yaw 增量| GimbalCmd
+    VisMod -->|发布实时观测与滤波| TargetMsg1
+    PredMod -->|发布预测轨迹| TargetMsg2
+    LogMod -->|无锁 IO 写入| Storage
 ```
 ## 核心模块说明
 - **Camera Module**: 独立线程。通过 GStreamer 直接将底层 V4L2 视频流硬件解码并转为 BGR 格式，打上纳秒级统一时间戳后推入缓存。
